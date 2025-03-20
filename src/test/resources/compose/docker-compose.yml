@@ -1,0 +1,156 @@
+version: "3.8"
+services:
+  discovery-service:
+    image: openjdk:21-jdk
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+      - "7050:7050"
+    volumes:
+      - ./discovery-service:/service
+    command: ["java", "-jar", "/service/discovery-service.jar"]
+    networks:
+      - ecommerce-system
+
+  config-server:
+    image: openjdk:21-jdk
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config-server:/service
+      - ./config-repo:/config-repo
+      - ./script/wait-for-it.sh:/wait-for-it.sh
+    command: ["/wait-for-it.sh", "discovery-service:8761", "--", "java -jar /service/config-server.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+  api-gateway:
+    image: openjdk:21-jdk
+    container_name: api-gateway
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./api-gateway:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/api-gateway.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  notification-service:
+    image: openjdk:21-jdk
+    container_name: notification-service
+    volumes:
+      - ./notification-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/notification-service.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  order-service:
+    image: openjdk:21-jdk
+    container_name: order-service
+    volumes:
+      - ./order-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/order-service.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  payment-service:
+    image: openjdk:21-jdk
+    container_name: payment-service
+    volumes:
+      - ./payment-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/payment-service.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  product-service:
+    image: openjdk:21-jdk
+    container_name: product-service
+    volumes:
+      - ./product-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/product-service.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  shipping-service:
+    image: openjdk:21-jdk
+    container_name: shipping-service
+    volumes:
+      - ./shipping-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/shipping-service.jar"]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  user-service:
+    image: openjdk:21-jdk
+    container_name: user-service
+    volumes:
+      - ./user-service:/service
+      - ./script/wait-for-register.sh:/wait-for-register.sh
+    command: [ "sh", "-c", "/wait-for-register.sh && java -jar /service/user-service.jar" ]
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - ecommerce-system
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+networks:
+  ecommerce-system:
+    external: true

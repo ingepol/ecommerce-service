@@ -1,0 +1,17 @@
+server:
+  port: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+
+eureka:
+  instance:
+    hostname: ${spring.application.name}
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    register-with-eureka: true
+    fetch-registry: true

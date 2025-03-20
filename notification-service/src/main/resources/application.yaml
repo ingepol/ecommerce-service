@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: "optional:configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: CONFIG-SERVER
+      username: admin
+      password: admin123
+      fail-fast: true
+      retry:
+        max-attempts: 10
+        initial-interval: 3000
+        multiplier: 2.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE}

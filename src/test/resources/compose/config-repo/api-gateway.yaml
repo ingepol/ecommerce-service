@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notificaciones/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payments/**
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/products/**
+        - id: shipping-service
+          uri: lb://shipping-service
+          predicates:
+            - Path=/shipping/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
