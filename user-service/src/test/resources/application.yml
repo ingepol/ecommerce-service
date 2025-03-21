@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: user-service
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+  data:
+    mongodb:
+      uri: mongodb://user:userpass@localhost:27017/userdb
+
+eureka:
+  client:
+    enabled: false
+  service-url:
+    defaultZone: ""

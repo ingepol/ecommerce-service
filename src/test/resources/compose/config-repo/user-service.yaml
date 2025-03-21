@@ -1,2 +1,7 @@
 server:
   port: 7090
+
+spring:
+    data:
+        mongodb:
+            uri: mongodb://user:userpass@mongo:27017/userdb

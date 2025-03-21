@@ -151,6 +151,26 @@ services:
       discovery-service:
         condition: service_healthy
 
+  mongo:
+    image: mongo:latest
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_INITDB_DATABASE=userdb
+    volumes:
+      - ./mongo/:/docker-entrypoint-initdb.d
+      - ./mongo:/home/mongodb
+      - mongo-data:/data/db
+    networks:
+      - ecommerce-system
+
 networks:
   ecommerce-system:
     external: true
+
+volumes:
+  mongo-data:
+    driver: local

@@ -1,0 +1,75 @@
+openapi: 3.0.1
+info:
+    title: User Service API
+    description: API for managing users
+    version: 1.0.0
+servers:
+    - url: /api/
+tags:
+    - name: User
+      description: API for managing users
+paths:
+    /api/v1/users:
+        post:
+            operationId: registerUser
+            summary: Register a new user
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserRequest'
+            responses:
+                '200':
+                    description: User registered successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+            tags:
+                - User
+    /api/v1/users/{username}:
+        get:
+            operationId: getUserByUsername
+            summary: Get user by username
+            parameters:
+                - name: username
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: User found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                '404':
+                    description: User not found
+            tags:
+                - User
+components:
+    schemas:
+        UserRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                email:
+                    type: string
+                password:
+                    type: string
+                role:
+                    type: string
+        User:
+            type: object
+            properties:
+                username:
+                    type: string
+                email:
+                    type: string
+                password:
+                    type: string
+                role:
+                    type: string
